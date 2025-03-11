@@ -144,6 +144,7 @@ Original text and existing translations: ${JSON.stringify(chunkObj, null, 2)}`;
 
 async function translateLocalizationChunks(
   filePath: string,
+  outputPath: string,
   chunkSize: number = 10,
   apiKey: string,
   dryRun: boolean = false,
@@ -256,10 +257,6 @@ async function translateLocalizationChunks(
       console.error(`Error processing chunk ${i + 1}:`, error);
       if (dryRun) return;
     } finally {
-      // Save progress after each chunk
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const outputPath = filePath.replace(".xcstrings", `_translated_${timestamp}.xcstrings`);
-
       if (verbose) console.log(`Saving progress for chunk ${i + 1}...`);
 
       // Validate and save current state
@@ -275,10 +272,6 @@ async function translateLocalizationChunks(
     // Update progress bar
     progressBar.increment(chunk.length);
   }
-
-  // Generate output filename with timestamp
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const outputPath = filePath.replace(".xcstrings", `_translated_${timestamp}.xcstrings`);
 
   if (verbose) console.log("Validating final JSON structure...");
 
@@ -316,6 +309,14 @@ async function main(): Promise<void> {
 
     if (verbose) console.log(`Using file: ${filePath}`);
 
+    // Get output path
+    const outputArg = args.find((arg) => arg.startsWith("--output="));
+    const outputPath = outputArg
+      ? outputArg.split("=")[1]
+      : filePath.replace(".xcstrings", `_translated_${new Date().toISOString().replace(/[:.]/g, "-")}.xcstrings`);
+
+    if (verbose) console.log(`Using output path: ${outputPath}`);
+
     // Get chunk size
     const chunkSizeArg = args.find((arg) => arg.startsWith("--chunk-size="));
     const chunkSize = chunkSizeArg ? parseInt(chunkSizeArg.split("=")[1], 10) : 10;
@@ -335,7 +336,7 @@ async function main(): Promise<void> {
       throw new Error(`${model.toUpperCase()}_API_KEY environment variable is not set`);
     }
 
-    await translateLocalizationChunks(filePath, chunkSize, apiKey, dryRun, verbose, model);
+    await translateLocalizationChunks(filePath, outputPath, chunkSize, apiKey, dryRun, verbose, model);
   } catch (error) {
     console.error("Error in main:", error);
     process.exit(1);

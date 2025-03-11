@@ -33,21 +33,30 @@
    ```bash
    npm install
    ```
-
 ## Usage
 
 1. **Command Line Arguments**:
    - `--dry-run`: Perform a dry run without making actual translations.
    - `--verbose`: Enable verbose logging.
-   - `--model=<model>`: Specify the translation model to use (`openai`, `anthropic`, or `gemini`).
-   - `--chunk-size=<size>`: Specify the chunk size for processing translations.
+   - `--model=<model>`: Specify the translation model to use (`openai`, `anthropic`, or `gemini`). Defaults to `openai`.
+   - `--chunk-size=<size>`: Specify the chunk size for processing translations. Defaults to 10.
+   - `--output=<path>`: Specify the output file path. Defaults to input filename with "_translated_[timestamp]" suffix.
 
 2. **Running the Script**:
    ```bash
-   node dist/index.js [options] <path_to_Localizable.xcstrings>
+   node dist/index.js [options] [path_to_Localizable.xcstrings]
    ```
+
+   The input file path is optional and defaults to "./Localizable.xcstrings" if not specified.
 
    Example:
    ```bash
-   node dist/index.js --model=openai --chunk-size=5 --verbose ./Localizable.xcstrings
+   # Using default input path with OpenAI
+   node dist/index.js --verbose
+
+   # Specifying input file and using Anthropic
+   node dist/index.js --model=anthropic --chunk-size=5 ./MyStrings.xcstrings
+
+   # Dry run with custom output path
+   node dist/index.js --dry-run --output=./output.xcstrings ./input.xcstrings
    ```
