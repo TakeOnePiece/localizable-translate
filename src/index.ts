@@ -6,10 +6,10 @@ import * as dotenv from "dotenv";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FileContent, LocalizableConfig, StringEntry, StringsObject } from "./models";
+import ProgressBar from "progress";
 
 // Load environment variables
 dotenv.config();
-
 // Read languages from .localizable_languages file if it exists
 function readLanguagesFromConfig(): string[] {
   const configFile = ".localizable_languages";
@@ -19,12 +19,16 @@ function readLanguagesFromConfig(): string[] {
   }
 
   try {
-    const config = JSON.parse(fs.readFileSync(configFile, "utf8")) as LocalizableConfig;
-    if (!config.languages || config.languages.length === 0) {
+    const config = fs.readFileSync(configFile, "utf8");
+    const languages = config
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    if (languages.length === 0) {
       console.error("Error: No languages specified in config file");
       process.exit(1);
     }
-    return config.languages;
+    return languages;
   } catch (error) {
     console.error(`Error reading ${configFile} file:`, error);
     process.exit(1);
@@ -191,6 +195,12 @@ async function translateLocalizationChunks(
 
   if (verbose) console.log(`Split into ${chunks.length} chunks of size ${chunkSize}`);
 
+  // Initialize progress bar
+  const progressBar = new ProgressBar("Translating [:bar] :current/:total :percent :etas", {
+    total: entries.length,
+    width: 40,
+  });
+
   // Process chunks
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i];
@@ -254,6 +264,9 @@ async function translateLocalizationChunks(
         console.error(`Error saving progress for chunk ${i + 1}:`, error);
       }
     }
+
+    // Update progress bar
+    progressBar.tick(chunk.length);
   }
 
   // Generate output filename with timestamp

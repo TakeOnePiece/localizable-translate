@@ -18,14 +18,14 @@
    ANTHROPIC_API_KEY=your_anthropic_api_key
    GEMINI_API_KEY=your_gemini_api_key
    ```
-
 3. **Configuration Files**:
-   - `.localizable_languages`: A JSON file specifying the languages you want to translate to.
+   - `.localizable_languages`: A file specifying the languages you want to translate to, with one language per line.
      Example:
-     ```json
-     {
-       "languages": ["ar", "de", "fr", "es"]
-     }
+     ```
+     ar
+     de
+     fr
+     es
      ```
    - `.localizable_prompt`: A file containing the prompt template for the translation. Use `{{LANGUAGES}}` as a placeholder for the languages list.
 

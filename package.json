@@ -1,6 +1,6 @@
 {
   "name": "localizable-translate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tool to translate Localizable.xcstrings files for different languages",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "publish": "npm run build && npm publish"
   },
   "files": [
     "/dist"
@@ -18,7 +19,8 @@
     "@anthropic-ai/sdk": "^0.39.0",
     "@google/generative-ai": "^0.24.0",
     "dotenv": "^16.4.7",
-    "openai": "^4.86.2"
+    "openai": "^4.86.2",
+    "progress": "^2.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
