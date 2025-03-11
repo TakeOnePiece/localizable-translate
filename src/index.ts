@@ -6,7 +6,8 @@ import * as dotenv from "dotenv";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FileContent, LocalizableConfig, StringEntry, StringsObject } from "./models";
-import ProgressBar from "progress";
+const cliProgress = require("cli-progress");
+const colors = require("ansi-colors");
 
 // Load environment variables
 dotenv.config();
@@ -196,9 +197,15 @@ async function translateLocalizationChunks(
   if (verbose) console.log(`Split into ${chunks.length} chunks of size ${chunkSize}`);
 
   // Initialize progress bar
-  const progressBar = new ProgressBar("Translating [:bar] :current/:total :percent :etas", {
-    total: entries.length,
-    width: 40,
+  const progressBar = new cliProgress.SingleBar({
+    format: "CLI Progress |" + colors.cyan("{bar}") + "| {percentage}% || {value}/{total} Chunks || Speed: {speed}",
+    barCompleteChar: "\u2588",
+    barIncompleteChar: "\u2591",
+    hideCursor: true,
+  });
+
+  progressBar.start(entries.length, 0, {
+    speed: "N/A",
   });
 
   // Process chunks
@@ -266,7 +273,7 @@ async function translateLocalizationChunks(
     }
 
     // Update progress bar
-    progressBar.tick(chunk.length);
+    progressBar.increment(chunk.length);
   }
 
   // Generate output filename with timestamp
@@ -284,6 +291,9 @@ async function translateLocalizationChunks(
   } catch (error) {
     console.error("Invalid JSON structure:", error);
   }
+
+  // Stop the progress bar
+  progressBar.stop();
 }
 
 // Main function to run the script
