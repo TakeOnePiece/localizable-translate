@@ -15,6 +15,7 @@ const openai_1 = require("openai");
 const dotenv = require("dotenv");
 const sdk_1 = require("@anthropic-ai/sdk");
 const generative_ai_1 = require("@google/generative-ai");
+const progress_1 = require("progress");
 // Load environment variables
 dotenv.config();
 // Read languages from .localizable_languages file if it exists
@@ -25,12 +26,16 @@ function readLanguagesFromConfig() {
         process.exit(1);
     }
     try {
-        const config = JSON.parse(fs.readFileSync(configFile, "utf8"));
-        if (!config.languages || config.languages.length === 0) {
+        const config = fs.readFileSync(configFile, "utf8");
+        const languages = config
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0);
+        if (languages.length === 0) {
             console.error("Error: No languages specified in config file");
             process.exit(1);
         }
-        return config.languages;
+        return languages;
     }
     catch (error) {
         console.error(`Error reading ${configFile} file:`, error);
@@ -172,6 +177,11 @@ function translateLocalizationChunks(filePath_1) {
         }
         if (verbose)
             console.log(`Split into ${chunks.length} chunks of size ${chunkSize}`);
+        // Initialize progress bar
+        const progressBar = new progress_1.default("Translating [:bar] :current/:total :percent :etas", {
+            total: entries.length,
+            width: 40,
+        });
         // Process chunks
         for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
@@ -239,6 +249,8 @@ function translateLocalizationChunks(filePath_1) {
                     console.error(`Error saving progress for chunk ${i + 1}:`, error);
                 }
             }
+            // Update progress bar
+            progressBar.tick(chunk.length);
         }
         // Generate output filename with timestamp
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
