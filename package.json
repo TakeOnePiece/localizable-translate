@@ -1,6 +1,6 @@
 {
   "name": "localizable-translate",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A tool to translate Localizable.xcstrings files for different languages",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
