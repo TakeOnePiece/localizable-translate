@@ -60,3 +60,7 @@
    # Dry run with custom output path
    node dist/index.js --dry-run --output=./output.xcstrings ./input.xcstrings
    ```
+
+## About
+
+This tool powers the localization of [Time Awareness](https://apps.apple.com/us/app/time-awareness-visualizations/id6742592534), an iOS app that helps people with timeblindness visualize and understand the passage of time through engaging visual representations. The app features 24 different visualization types for tracking hours, days, weeks, months, years and human life spans.
