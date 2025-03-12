@@ -1,3 +1,4 @@
 .env
 .localizable_languages
 node_modules
+.DS_Store
